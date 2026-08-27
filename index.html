@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Token Counter and Inference Cost Calculator - free, no signup</title>
+<meta name="description" content="Free LLM token counter and API cost calculator. Estimate tokens, compare inference costs across Claude, GPT-5, Gemini, Llama, Qwen and Mistral, and check context-window fit. No signup, runs entirely in your browser.">
+<meta property="og:title" content="LLM Token Counter and Inference Cost Calculator">
+<meta property="og:description" content="Estimate tokens, compare LLM API costs across 20+ models with dated, sourced list prices, and check context-window fit. Free, client-side, no signup.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://weioai.github.io/llm-cost-calculator/">
+<meta property="og:site_name" content="Weio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LLM Token Counter and Inference Cost Calculator">
+<meta name="twitter:description" content="Free token estimator and LLM API cost comparison across Claude, GPT-5, Gemini, Llama, Qwen, Mistral. No signup.">
+<link rel="canonical" href="https://weioai.github.io/llm-cost-calculator/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230C0F14'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%233D5AFE'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "LLM Token Counter and Inference Cost Calculator",
+  "url": "https://weioai.github.io/llm-cost-calculator/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Free client-side LLM token estimator and inference cost calculator. Compare API costs across Claude, GPT-5, Gemini, Llama, Qwen and Mistral models with dated, sourced list prices, and check whether your text fits a model's context window.",
+  "publisher": { "@type": "Organization", "name": "Weio", "url": "https://weio.ai" }
+}
+</script>
+<style>
+  :root {
+    --ink: #0C0F14;
+    --panel: #131820;
+    --panel-2: #1A2029;
+    --line: #232B36;
+    --text: #E8ECF1;
+    --muted: #94A0AE;
+    --blue: #3D5AFE;
+    --blue-soft: #5C74FE;
+    --good: #37C978;
+    --bad: #F2555A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    padding: 0 16px 64px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header { padding: 40px 0 8px; }
+  .wordmark { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+  .wordmark .dot { color: var(--blue); }
+  h1 { font-size: 30px; line-height: 1.2; letter-spacing: -0.02em; margin: 18px 0 10px; }
+  .sub { color: var(--muted); max-width: 640px; font-size: 16px; }
+  section { margin-top: 36px; }
+  h2 { font-size: 20px; margin-bottom: 4px; letter-spacing: -0.01em; }
+  .hint { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 150px;
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 15px;
+    resize: vertical;
+  }
+  textarea:focus, input:focus, select:focus { outline: 2px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
+  .stat-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+  .stat {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 16px;
+    min-width: 130px;
+    flex: 1 1 130px;
+  }
+  .stat .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .k { color: var(--muted); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+  .honest { color: var(--muted); font-size: 13.5px; margin-top: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  input, select {
+    width: 100%;
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 15px;
+  }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A0AE' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  .results { display: flex; flex-wrap: wrap; gap: 12px; }
+  .fit { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 15px; border: 1px solid var(--line); background: var(--panel-2); }
+  .fit.ok { border-color: var(--good); }
+  .fit.no { border-color: var(--bad); }
+  .fit b.ok { color: var(--good); }
+  .fit b.no { color: var(--bad); }
+  .tablewrap { overflow-x: auto; margin-top: 8px; border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+  th, td { text-align: right; padding: 9px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; }
+  th { background: var(--panel); color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.05em; position: sticky; top: 0; }
+  tbody tr { background: var(--ink); }
+  tbody tr.sel { background: rgba(61, 90, 254, 0.12); }
+  tbody tr.sel td:first-child { color: var(--blue-soft); font-weight: 600; }
+  .vendor { color: var(--muted); font-size: 12.5px; }
+  .cta {
+    margin-top: 44px;
+    background: linear-gradient(135deg, rgba(61,90,254,0.14), rgba(61,90,254,0.04));
+    border: 1px solid rgba(61,90,254,0.45);
+    border-radius: 12px;
+    padding: 26px 24px;
+  }
+  .cta h2 { font-size: 21px; margin-bottom: 8px; }
+  .cta p { color: var(--muted); max-width: 620px; margin-bottom: 18px; }
+  .btn {
+    display: inline-block;
+    background: var(--blue);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 15.5px;
+  }
+  .btn:hover { background: var(--blue-soft); }
+  .sources { font-size: 13.5px; color: var(--muted); }
+  .sources ul { list-style: none; margin-top: 8px; }
+  .sources li { margin-bottom: 5px; }
+  .sources a, footer a { color: var(--blue-soft); text-decoration: none; }
+  .sources a:hover, footer a:hover { text-decoration: underline; }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  @media (max-width: 560px) {
+    h1 { font-size: 24px; }
+    header { padding-top: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="wordmark">weio<span class="dot">.</span></div>
+  <h1>LLM Token Counter and Inference Cost Calculator</h1>
+  <p class="sub">Estimate tokens, compare API costs across 20+ current models with dated, sourced list prices, and check context-window fit. Free, no signup, runs entirely in your browser - nothing you type leaves this page.</p>
+</header>
+
+<section id="tokens">
+  <h2>1. Token estimator</h2>
+  <p class="hint">Paste any text. Counts update as you type.</p>
+  <div class="card">
+    <textarea id="txt" placeholder="Paste your prompt, document, or transcript here..." aria-label="Text to estimate tokens for"></textarea>
+    <div class="stat-row">
+      <div class="stat"><div class="v" id="tokEst">0</div><div class="k">Est. tokens</div></div>
+      <div class="stat"><div class="v" id="charCt">0</div><div class="k">Characters</div></div>
+      <div class="stat"><div class="v" id="wordCt">0</div><div class="k">Words</div></div>
+    </div>
+    <p class="honest">This is an estimate, not exact tokenization. It blends a characters/4 heuristic with a words-based ratio, which tracks byte-pair-encoding (BPE) tokenizers to within roughly 10 percent for typical English prose. Code, non-English text, and unusual formatting can deviate more. Each provider's tokenizer differs - use their official token-counting APIs for exact counts.</p>
+  </div>
+</section>
+
+<section id="cost">
+  <h2>2. Inference cost calculator</h2>
+  <p class="hint">Published list prices per 1M tokens, as of 2026-08-27. Sources below.</p>
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label for="model">Model</label>
+        <select id="model" aria-label="Model"></select>
+      </div>
+      <div>
+        <label for="inTok">Input tokens per request</label>
+        <input id="inTok" type="number" min="0" value="2000">
+      </div>
+      <div>
+        <label for="outTok">Output tokens per request</label>
+        <input id="outTok" type="number" min="0" value="500">
+      </div>
+      <div>
+        <label for="reqDay">Requests per day</label>
+        <input id="reqDay" type="number" min="0" value="1000">
+      </div>
+    </div>
+    <div class="results">
+      <div class="stat"><div class="v" id="costReq">$0</div><div class="k">Per request</div></div>
+      <div class="stat"><div class="v" id="costDay">$0</div><div class="k">Per day</div></div>
+      <div class="stat"><div class="v" id="costMo">$0</div><div class="k">Per month (30 days)</div></div>
+    </div>
+    <p class="honest">List prices only. Excludes prompt-caching discounts, batch discounts, free tiers, and volume pricing - actual bills can be lower.</p>
+  </div>
+
+  <h2 style="margin-top:28px">Comparison across models</h2>
+  <p class="hint">Same workload, every model. Selected model highlighted. Sorted by monthly cost.</p>
+  <div class="tablewrap">
+    <table id="cmp">
+      <thead>
+        <tr><th>Model</th><th>Input $/1M</th><th>Output $/1M</th><th>Per request</th><th>Per day</th><th>Per month</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="fit">
+  <h2>3. Context-window fit checker</h2>
+  <p class="hint">Uses your text from the estimator above and the selected model.</p>
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label for="fitModel">Model</label>
+        <select id="fitModel" aria-label="Model for context fit check"></select>
+      </div>
+    </div>
+    <div class="fit" id="fitOut">Paste text above to check whether it fits.</div>
+    <p class="honest">Context limits are as published by each provider; a real request also needs room for output tokens and system prompts.</p>
+  </div>
+</section>
+
+<div class="cta">
+  <h2>Estimating for a whole team or your real workload?</h2>
+  <p>Weio routes tasks to the most cost-efficient model that passes quality - connected to your actual tools. Stop guessing which model each job needs.</p>
+  <a class="btn" href="https://weio.ai/register?utm_source=tools&amp;utm_medium=product&amp;utm_campaign=llm-cost-calculator">Try Weio free</a>
+</div>
+
+<section id="prices">
+  <h2>Prices as of 2026-08-27 - sources</h2>
+  <div class="card sources">
+    <p>Every price on this page is a published list price, checked against the provider's official pricing page on 2026-08-27:</p>
+    <ul>
+      <li>Anthropic (Claude Opus, Sonnet, Haiku): <a href="https://platform.claude.com/docs/en/about-claude/pricing" rel="noopener">platform.claude.com/docs/en/about-claude/pricing</a></li>
+      <li>OpenAI (GPT-5.x, GPT-4o): <a href="https://developers.openai.com/api/docs/pricing" rel="noopener">developers.openai.com/api/docs/pricing</a></li>
+      <li>Google (Gemini): <a href="https://ai.google.dev/gemini-api/docs/pricing" rel="noopener">ai.google.dev/gemini-api/docs/pricing</a></li>
+      <li>Together AI (Llama, Qwen hosting): <a href="https://www.together.ai/pricing" rel="noopener">together.ai/pricing</a></li>
+      <li>Mistral: <a href="https://mistral.ai/pricing/api" rel="noopener">mistral.ai/pricing/api</a></li>
+    </ul>
+    <p style="margin-top:10px">Notes: Gemini 3.7 Flash and 3.6 Flash prices are promotional through 2026-12-31 (rising to $1.50 / $7.50 on 2027-01-01). Gemini 2.5 Pro prices shown are for prompts up to 200K tokens ($2.50 / $15.00 above that). Llama and Qwen are open-weight models - prices shown are Together AI's hosted rates; other hosts differ. Prices change; if this page's date looks stale, check the source links.</p>
+  </div>
+</section>
+
+<footer>
+  <span>Built by <a href="https://weio.ai" rel="noopener">weio.ai</a></span>
+  <span><a href="https://github.com/weioai/llm-cost-calculator" rel="noopener">Source on GitHub</a> (MIT)</span>
+  <span>No analytics, no cookies, no tracking. Works offline once loaded.</span>
+</footer>
+
+</div>
+<script>
+"use strict";
+// Published list prices per 1M tokens (USD), checked 2026-08-27. ctx = context window
+// in tokens where the provider publishes one; null = not listed on the source page.
+var MODELS = [
+  { vendor: "Anthropic",  name: "Claude Opus 5",          inP: 5.00,  outP: 25.00, ctx: null },
+  { vendor: "Anthropic",  name: "Claude Opus 4.8",        inP: 5.00,  outP: 25.00, ctx: 1000000 },
+  { vendor: "Anthropic",  name: "Claude Sonnet 5",        inP: 2.00,  outP: 10.00, ctx: 1000000 },
+  { vendor: "Anthropic",  name: "Claude Sonnet 4.6",      inP: 3.00,  outP: 15.00, ctx: 1000000 },
+  { vendor: "Anthropic",  name: "Claude Haiku 4.5",       inP: 1.00,  outP: 5.00,  ctx: 200000 },
+  { vendor: "OpenAI",     name: "GPT-5.2",                inP: 1.75,  outP: 14.00, ctx: null },
+  { vendor: "OpenAI",     name: "GPT-5.1",                inP: 1.25,  outP: 10.00, ctx: 400000 },
+  { vendor: "OpenAI",     name: "GPT-5",                  inP: 1.25,  outP: 10.00, ctx: 400000 },
+  { vendor: "OpenAI",     name: "GPT-5 mini",             inP: 0.25,  outP: 2.00,  ctx: 400000 },
+  { vendor: "OpenAI",     name: "GPT-5 nano",             inP: 0.05,  outP: 0.40,  ctx: 400000 },
+  { vendor: "OpenAI",     name: "GPT-4o",                 inP: 2.50,  outP: 10.00, ctx: 128000 },
+  { vendor: "OpenAI",     name: "GPT-4o mini",            inP: 0.15,  outP: 0.60,  ctx: 128000 },
+  { vendor: "Google",     name: "Gemini 3.7 Flash",       inP: 0.75,  outP: 3.75,  ctx: null },
+  { vendor: "Google",     name: "Gemini 3.5 Flash",       inP: 1.50,  outP: 9.00,  ctx: null },
+  { vendor: "Google",     name: "Gemini 3.5 Flash-Lite",  inP: 0.30,  outP: 2.50,  ctx: null },
+  { vendor: "Google",     name: "Gemini 2.5 Pro",         inP: 1.25,  outP: 10.00, ctx: 1048576 },
+  { vendor: "Google",     name: "Gemini 2.5 Flash",       inP: 0.30,  outP: 2.50,  ctx: 1048576 },
+  { vendor: "Google",     name: "Gemini 2.5 Flash-Lite",  inP: 0.10,  outP: 0.40,  ctx: 1048576 },
+  { vendor: "Meta / Together AI", name: "Llama 3.3 70B",  inP: 1.04,  outP: 1.04,  ctx: 131072 },
+  { vendor: "Meta / Together AI", name: "Llama 3 8B Lite",inP: 0.14,  outP: 0.14,  ctx: null },
+  { vendor: "Qwen / Together AI", name: "Qwen3.7-Plus",   inP: 0.32,  outP: 1.28,  ctx: null },
+  { vendor: "Qwen / Together AI", name: "Qwen3.5-397B",   inP: 0.60,  outP: 3.60,  ctx: null },
+  { vendor: "Qwen / Together AI", name: "Qwen2.5 7B Turbo", inP: 0.30, outP: 0.30, ctx: null },
+  { vendor: "Mistral",    name: "Mistral Large 3",        inP: 0.50,  outP: 1.50,  ctx: null },
+  { vendor: "Mistral",    name: "Mistral Medium 3.5",     inP: 1.50,  outP: 7.50,  ctx: null },
+  { vendor: "Mistral",    name: "Mistral Small 4",        inP: 0.15,  outP: 0.60,  ctx: null },
+  { vendor: "Mistral",    name: "Codestral",              inP: 0.30,  outP: 0.90,  ctx: null }
+];
+
+function $(id) { return document.getElementById(id); }
+
+function estimateTokens(text) {
+  if (!text) return 0;
+  var chars = text.length;
+  var words = (text.trim().match(/\S+/g) || []).length;
+  // Blend of two standard heuristics: chars/4 and words * 4/3.
+  return Math.round((chars / 4 + words * 4 / 3) / 2);
+}
+
+function fmtInt(n) { return n.toLocaleString("en-US"); }
+
+function fmtUSD(n) {
+  if (n === 0) return "$0";
+  if (n < 0.0001) return "$" + n.toExponential(2);
+  if (n < 0.01) return "$" + n.toFixed(5).replace(/0+$/, "").replace(/\.$/, "");
+  if (n < 1) return "$" + n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+  if (n < 100) return "$" + n.toFixed(2);
+  return "$" + Math.round(n).toLocaleString("en-US");
+}
+
+function costPerRequest(m, inTok, outTok) {
+  return (inTok * m.inP + outTok * m.outP) / 1e6;
+}
+
+function fillSelect(sel) {
+  var vendors = [];
+  MODELS.forEach(function (m) { if (vendors.indexOf(m.vendor) < 0) vendors.push(m.vendor); });
+  vendors.forEach(function (v) {
+    var og = document.createElement("optgroup");
+    og.label = v;
+    MODELS.forEach(function (m, i) {
+      if (m.vendor !== v) return;
+      var o = document.createElement("option");
+      o.value = i;
+      o.textContent = m.name;
+      og.appendChild(o);
+    });
+    sel.appendChild(og);
+  });
+}
+
+function readNum(id) {
+  var v = parseFloat($(id).value);
+  return isFinite(v) && v >= 0 ? v : 0;
+}
+
+function update() {
+  var text = $("txt").value;
+  var tok = estimateTokens(text);
+  $("tokEst").textContent = tok ? "~" + fmtInt(tok) : "0";
+  $("charCt").textContent = fmtInt(text.length);
+  $("wordCt").textContent = fmtInt((text.trim().match(/\S+/g) || []).length);
+
+  var mi = parseInt($("model").value, 10) || 0;
+  var m = MODELS[mi];
+  var inTok = readNum("inTok"), outTok = readNum("outTok"), reqDay = readNum("reqDay");
+  var perReq = costPerRequest(m, inTok, outTok);
+  $("costReq").textContent = fmtUSD(perReq);
+  $("costDay").textContent = fmtUSD(perReq * reqDay);
+  $("costMo").textContent = fmtUSD(perReq * reqDay * 30);
+
+  // Comparison table
+  var rows = MODELS.map(function (mm, i) {
+    var r = costPerRequest(mm, inTok, outTok);
+    return { i: i, m: mm, req: r, day: r * reqDay, mo: r * reqDay * 30 };
+  }).sort(function (a, b) { return a.mo - b.mo; });
+  var tb = $("cmp").getElementsByTagName("tbody")[0];
+  tb.innerHTML = "";
+  rows.forEach(function (r) {
+    var tr = document.createElement("tr");
+    if (r.i === mi) tr.className = "sel";
+    tr.innerHTML =
+      "<td>" + r.m.name + " <span class=\"vendor\">" + r.m.vendor + "</span></td>" +
+      "<td>$" + r.m.inP.toFixed(2) + "</td>" +
+      "<td>$" + r.m.outP.toFixed(2) + "</td>" +
+      "<td>" + fmtUSD(r.req) + "</td>" +
+      "<td>" + fmtUSD(r.day) + "</td>" +
+      "<td>" + fmtUSD(r.mo) + "</td>";
+    tb.appendChild(tr);
+  });
+
+  // Context fit
+  var fi = parseInt($("fitModel").value, 10) || 0;
+  var fm = MODELS[fi];
+  var out = $("fitOut");
+  out.className = "fit";
+  if (!tok) {
+    out.textContent = "Paste text above to check whether it fits.";
+  } else if (fm.ctx === null) {
+    out.innerHTML = fm.name + ": context limit is not listed on the source pricing page - check the provider's model documentation. Your text is ~" + fmtInt(tok) + " estimated tokens.";
+  } else if (tok <= fm.ctx) {
+    out.className = "fit ok";
+    out.innerHTML = "<b class=\"ok\">Fits.</b> ~" + fmtInt(tok) + " estimated tokens vs " + fmtInt(fm.ctx) + "-token context window for " + fm.name + " (" + (100 * tok / fm.ctx).toFixed(1) + "% used).";
+  } else {
+    out.className = "fit no";
+    out.innerHTML = "<b class=\"no\">Does not fit.</b> ~" + fmtInt(tok) + " estimated tokens vs " + fmtInt(fm.ctx) + "-token context window for " + fm.name + ". You would need to split or summarize (~" + fmtInt(tok - fm.ctx) + " tokens over).";
+  }
+}
+
+fillSelect($("model"));
+fillSelect($("fitModel"));
+$("model").value = "2";     // Claude Sonnet 5 default
+$("fitModel").value = "2";
+["txt", "model", "inTok", "outTok", "reqDay", "fitModel"].forEach(function (id) {
+  $(id).addEventListener("input", update);
+  $(id).addEventListener("change", update);
+});
+update();
+</script>
+</body>
+</html>
