@@ -52,8 +52,8 @@
   }
   .wrap { max-width: 980px; margin: 0 auto; }
   header { padding: 40px 0 8px; }
-  .wordmark { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
-  .wordmark .dot { color: var(--blue); }
+  .wordmark { line-height: 0; }
+  .wordmark svg { height: 26px; width: auto; display: block; }
   h1 { font-size: 30px; line-height: 1.2; letter-spacing: -0.02em; margin: 18px 0 10px; }
   .sub { color: var(--muted); max-width: 640px; font-size: 16px; }
   section { margin-top: 36px; }
@@ -154,7 +154,21 @@
 <div class="wrap">
 
 <header>
-  <div class="wordmark">weio<span class="dot">.</span></div>
+  <!-- Canonical Weio wordmark, embedded from company-os/brand-kit/wordmark.svg.
+       Do not hand-edit; regenerate via brand-kit/make_wordmark_svg.py. Letters use
+       currentColor (inherits page text: light on this dark ground); dot is Weio Blue. -->
+  <div class="wordmark">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6741 1821" role="img" aria-label="Weio" fill="none">
+      <title>Weio</title>
+      <g transform="translate(164 1657) scale(1 -1)" fill="currentColor">
+        <path transform="translate(0 0)" d="M61 1493H430L688 408L944 1493H1315L1571 408L1829 1493H2195L1843 0H1399L1128 1135L860 0H416Z"/>
+        <path transform="translate(2259 0)" d="M1290 563V461H453Q466 335 544.0 272.0Q622 209 762 209Q875 209 993.5 242.5Q1112 276 1237 344V68Q1110 20 983.0 -4.5Q856 -29 729 -29Q425 -29 256.5 125.5Q88 280 88 559Q88 833 253.5 990.0Q419 1147 709 1147Q973 1147 1131.5 988.0Q1290 829 1290 563ZM922 682Q922 784 862.5 846.5Q803 909 707 909Q603 909 538.0 850.5Q473 792 457 682Z"/>
+        <path transform="translate(3648 0)" d="M172 1120H530V0H172ZM172 1556H530V1264H172Z"/>
+        <path transform="translate(4350 0)" d="M705 891Q586 891 523.5 805.5Q461 720 461 559Q461 398 523.5 312.5Q586 227 705 227Q822 227 884.0 312.5Q946 398 946 559Q946 720 884.0 805.5Q822 891 705 891ZM705 1147Q994 1147 1156.5 991.0Q1319 835 1319 559Q1319 283 1156.5 127.0Q994 -29 705 -29Q415 -29 251.5 127.0Q88 283 88 559Q88 835 251.5 991.0Q415 1147 705 1147Z"/>
+        <circle cx="6188" cy="1268" r="226" fill="#3D5AFE"/>
+      </g>
+    </svg>
+  </div>
   <h1>LLM Token Counter and Inference Cost Calculator</h1>
   <p class="sub">Estimate tokens, compare API costs across 20+ current models with dated, sourced list prices, and check context-window fit. Free, no signup, runs entirely in your browser - nothing you type leaves this page.</p>
 </header>
