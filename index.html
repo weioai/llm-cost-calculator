@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LLM Token Counter and Inference Cost Calculator - free, no signup</title>
-<meta name="description" content="Free LLM token counter and API cost calculator. Estimate tokens, compare inference costs across Claude, GPT-5, Gemini, Llama, Qwen and Mistral, and check context-window fit. No signup, runs entirely in your browser.">
+<meta name="description" content="Free LLM token counter and API cost calculator. Estimate tokens, compare inference costs across Claude, GPT-5 and Gemini, and check context-window fit. No signup, runs entirely in your browser.">
 <meta property="og:title" content="LLM Token Counter and Inference Cost Calculator">
 <meta property="og:description" content="Estimate tokens, compare LLM API costs across 20+ models with dated, sourced list prices, and check context-window fit. Free, client-side, no signup.">
 <meta property="og:type" content="website">
@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="Weio">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LLM Token Counter and Inference Cost Calculator">
-<meta name="twitter:description" content="Free token estimator and LLM API cost comparison across Claude, GPT-5, Gemini, Llama, Qwen, Mistral. No signup.">
+<meta name="twitter:description" content="Free token estimator and LLM API cost comparison across Claude, GPT-5 and Gemini. No signup.">
 <link rel="canonical" href="https://weioai.github.io/llm-cost-calculator/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230C0F14'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%233D5AFE'/%3E%3C/svg%3E">
 <script type="application/ld+json">
@@ -24,7 +24,7 @@
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Any",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "description": "Free client-side LLM token estimator and inference cost calculator. Compare API costs across Claude, GPT-5, Gemini, Llama, Qwen and Mistral models with dated, sourced list prices, and check whether your text fits a model's context window.",
+  "description": "Free client-side LLM token estimator and inference cost calculator. Compare API costs across Claude, GPT-5 and Gemini models with dated, sourced list prices, and check whether your text fits a model's context window.",
   "publisher": { "@type": "Organization", "name": "Weio", "url": "https://weio.ai" }
 }
 </script>
@@ -258,10 +258,8 @@
       <li>Anthropic (Claude Opus, Sonnet, Haiku): <a href="https://platform.claude.com/docs/en/about-claude/pricing" rel="noopener">platform.claude.com/docs/en/about-claude/pricing</a></li>
       <li>OpenAI (GPT-5.x, GPT-4o): <a href="https://developers.openai.com/api/docs/pricing" rel="noopener">developers.openai.com/api/docs/pricing</a></li>
       <li>Google (Gemini): <a href="https://ai.google.dev/gemini-api/docs/pricing" rel="noopener">ai.google.dev/gemini-api/docs/pricing</a></li>
-      <li>Together AI (Llama, Qwen hosting): <a href="https://www.together.ai/pricing" rel="noopener">together.ai/pricing</a></li>
-      <li>Mistral: <a href="https://mistral.ai/pricing/api" rel="noopener">mistral.ai/pricing/api</a></li>
     </ul>
-    <p style="margin-top:10px">Notes: Gemini 3.7 Flash and 3.6 Flash prices are promotional through 2026-12-31 (rising to $1.50 / $7.50 on 2027-01-01). Gemini 2.5 Pro prices shown are for prompts up to 200K tokens ($2.50 / $15.00 above that). Llama and Qwen are open-weight models - prices shown are Together AI's hosted rates; other hosts differ. Prices change; if this page's date looks stale, check the source links.</p>
+    <p style="margin-top:10px">Notes: Gemini 3.7 Flash and 3.6 Flash prices are promotional through 2026-12-31 (rising to $1.50 / $7.50 on 2027-01-01). Gemini 2.5 Pro prices shown are for prompts up to 200K tokens ($2.50 / $15.00 above that). Prices change; if this page's date looks stale, check the source links.</p>
   </div>
 </section>
 
@@ -294,16 +292,7 @@ var MODELS = [
   { vendor: "Google",     name: "Gemini 3.5 Flash-Lite",  inP: 0.30,  outP: 2.50,  ctx: null },
   { vendor: "Google",     name: "Gemini 2.5 Pro",         inP: 1.25,  outP: 10.00, ctx: 1048576 },
   { vendor: "Google",     name: "Gemini 2.5 Flash",       inP: 0.30,  outP: 2.50,  ctx: 1048576 },
-  { vendor: "Google",     name: "Gemini 2.5 Flash-Lite",  inP: 0.10,  outP: 0.40,  ctx: 1048576 },
-  { vendor: "Meta / Together AI", name: "Llama 3.3 70B",  inP: 1.04,  outP: 1.04,  ctx: 131072 },
-  { vendor: "Meta / Together AI", name: "Llama 3 8B Lite",inP: 0.14,  outP: 0.14,  ctx: null },
-  { vendor: "Qwen / Together AI", name: "Qwen3.7-Plus",   inP: 0.32,  outP: 1.28,  ctx: null },
-  { vendor: "Qwen / Together AI", name: "Qwen3.5-397B",   inP: 0.60,  outP: 3.60,  ctx: null },
-  { vendor: "Qwen / Together AI", name: "Qwen2.5 7B Turbo", inP: 0.30, outP: 0.30, ctx: null },
-  { vendor: "Mistral",    name: "Mistral Large 3",        inP: 0.50,  outP: 1.50,  ctx: null },
-  { vendor: "Mistral",    name: "Mistral Medium 3.5",     inP: 1.50,  outP: 7.50,  ctx: null },
-  { vendor: "Mistral",    name: "Mistral Small 4",        inP: 0.15,  outP: 0.60,  ctx: null },
-  { vendor: "Mistral",    name: "Codestral",              inP: 0.30,  outP: 0.90,  ctx: null }
+  { vendor: "Google",     name: "Gemini 2.5 Flash-Lite",  inP: 0.10,  outP: 0.40,  ctx: 1048576 }
 ];
 
 function $(id) { return document.getElementById(id); }

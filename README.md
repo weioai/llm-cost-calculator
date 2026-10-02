@@ -1,8 +1,8 @@
 # LLM Token Counter and Inference Cost Calculator
 
 Free, no-signup token estimator and LLM API cost calculator. Compare inference costs
-across 20+ current models - Claude (Opus, Sonnet, Haiku), GPT-5.x and GPT-4o, Gemini,
-Llama and Qwen (via Together AI), and Mistral - with dated, sourced list prices. Plus a
+across current Claude (Opus, Sonnet, Haiku), GPT-5.x and GPT-4o, and Gemini models - with
+dated, sourced list prices. Plus a
 context-window fit checker for your actual text.
 
 **Use it here: [weioai.github.io/llm-cost-calculator](https://weioai.github.io/llm-cost-calculator/)**
